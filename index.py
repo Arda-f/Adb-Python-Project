@@ -20,15 +20,27 @@ def Accounts():
             value[0] = value[0].replace("{", "")
             print(value[0])
 
-while True:
-    print()
-    user_input = input("Kullanıcı Komutu: ")
-    user_input = user_input.split(":")
-    user_input[0] = user_input[0].lower()
-    if(user_input[0] == "accounts"):
-        Accounts()
-    else:
-        print("komut uygulanamadı")
+def wifi_scanner():
+    sayac = 0
+    scanner = getoutput("adb shell dumpsys wifiscanner -l")
+    scanner_list = scanner.splitlines()
+    for value in scanner_list:
+        value = value.strip()
+        if(value.startswith("BSSID") or value.endswith("S]") and sayac == 0):
+            print(value)
+            sayac = 1
+
+wifi_scanner()
+
+# while True:
+#     print()
+#     user_input = input("Kullanıcı Komutu: ")
+#     user_input = user_input.split(":")
+#     user_input[0] = user_input[0].lower()
+#     if(user_input[0] == "accounts"):
+#         Accounts()
+#     else:
+#         print("komut uygulanamadı")
     # devices = getoutput("adb shell dumpsys battery")
     # devices.strip()
     # devices_list = devices.splitlines()
