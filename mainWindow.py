@@ -7,19 +7,17 @@ from ttkthemes import themed_style
 
 adb = ".\\platform-tools\\adb.exe"
 
-class EventListeners:
-    
+class Events:
+
     def start():
         control_devices = ""
         while True:
             devices = getoutput( adb + " devices")
             if control_devices != devices:
                 control_devices = devices
-
                 if list_devices.get_children():
                     for value in list_devices.get_children():
                         list_devices.item(item=value,values=" ")
-                
                 devices = devices.splitlines()
                 devices.reverse()
                 for device in devices:
@@ -28,29 +26,7 @@ class EventListeners:
                         value.insert(2,getoutput( adb + " -s " + value[0] + " shell getprop ro.product.model"))
                         list_devices.insert('',0,values=value)
 
-    # def hesaplar():
-    #     wifi = getoutput("adb -s " + tk.title +  " shell dumpsys account -l")
-    #     wifi_list = wifi.splitlines()
-    #     listBox1.delete(0, END)
-    #     for value in wifi_list:
-    #         value = value.strip()
-    #         if(value.endswith("}")):
-    #             value = value.split(",")
-    #             value[0] = value[0].replace("=",": ")
-    #             value[0] = value[0].replace("{", "")
-    #             listBox1.insert(0, value[0])
-
-    # def ekle():
-    #     meminfo = getoutput("adb -s " + tk.title +  " shell dumpsys meminfo | findstr /l /c:RAM")
-    #     ram = ram.splitlines()
-    #     listBox1.delete(0, END)
-    #     for value in ram:
-    #         value = value.split("(")
-    #         value[0] = value[0].strip().removesuffix("K")
-    #         listBox1.insert(0,value[0])
-
-class Events:
-    def charge():
+    def battery():
         control_level = ""
         while True:
             level = getoutput( adb + " -s " + tk.title + " shell dumpsys battery | findstr /r /c:level")
@@ -58,19 +34,13 @@ class Events:
             if level.split(":")[1].strip() != control_level:
                 label_charge_per.config(text=level.split(":")[1].strip() + "%")
                 control_level = level.split(":")[1].strip()
-
-    def AC():
-        control_AC = ""
-        while True:
+            control_AC = ""
             AC = getoutput( adb + " -s " + tk.title + " shell dumpsys battery | findstr /r /c:AC")
             AC = AC.strip()
             if AC.split(":")[1].strip() != control_AC:
                 label_AC_stat.config(text=AC.split(":")[1].strip())
                 control_AC = AC.split(":")[1].strip()
-
-    def USB():
-        control_USB = ""
-        while True:
+            control_USB = ""
             USB = getoutput( adb + " -s " + tk.title + " shell dumpsys battery | findstr /r /c:USB")
             USB = USB.strip()
             if USB.split(":")[1].strip() != control_USB:
@@ -103,17 +73,17 @@ class Events:
                             listView_cpu.item(item=children[i - 2],values=value)
                     
     def threads():
-        charge_thread = threading.Thread(target=Events.charge)
+        charge_thread = threading.Thread(target=Events.battery)
         charge_thread.daemon = True 
         charge_thread.start()
 
-        AC_thread = threading.Thread(target=Events.AC)
-        AC_thread.daemon = True
-        AC_thread.start()
+        # AC_thread = threading.Thread(target=Events.AC)
+        # AC_thread.daemon = True
+        # AC_thread.start()
 
-        USB_thread = threading.Thread(target=Events.USB)
-        USB_thread.daemon = True
-        USB_thread.start()
+        # USB_thread = threading.Thread(target=Events.USB)
+        # USB_thread.daemon = True
+        # USB_thread.start()
 
         cpu_thread = threading.Thread(target=Events.cpuinfo)
         cpu_thread.daemon = True
@@ -193,7 +163,7 @@ listView_cpu.column(column="package_name", width=300)
 listView_cpu.column(column="details", width=100)
 listView_cpu.grid(columnspan=3)
 
-start_thread = threading.Thread(target=EventListeners.start)
+start_thread = threading.Thread(target=Events.start)
 start_thread.daemon = True 
 start_thread.start()
 
